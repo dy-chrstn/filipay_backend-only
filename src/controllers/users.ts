@@ -2,7 +2,8 @@ import express from "express";
 import bcrypt from "bcrypt";
 import moment from "moment";
 import mongoose from "mongoose";
-import { createWallet, updateWallet } from "../services/wallet";
+import { createWallet, updateWallet, getWallet } from "../services/wallet";
+import { createTransactionHistory } from "../services/transactionHistory";
 
 import {
   createUser,
@@ -185,17 +186,40 @@ export const updateBalance = async (req: express.Request, res: express.Response)
   const id = req.params.id;
   const { balance } = req.body;
   try {
-    // const objectId = new mongoose.Types.ObjectId(id);
+    const objectId = new mongoose.Types.ObjectId(id);
+    const user = await getUserById(objectId);
+    const beforeBalance = await getWallet(id);
     const wallet = await updateWallet(id, balance);
 
-    console.log('id: ', id);
-    console.log('balance: ', balance);
-    console.log('wallet: ', wallet);
+    const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`
+
+    const newHistory = await createTransactionHistory(
+      fullName,
+      beforeBalance.balance,
+      balance,
+      "Balance updated"
+    );
+
+    if(!user){
+      return res.status(400).json({
+        code: 1,
+        message: "User not found",
+        timestamp: true,
+      });
+    }
 
     if(!wallet ){
       return res.status(400).json({
         code: 1,
         message: "Wallet not found",
+        timestamp: true,
+      });
+    }
+
+    if(!newHistory){
+      return res.status(400).json({
+        code: 1,
+        message: "Transaction history not found",
         timestamp: true,
       });
     }

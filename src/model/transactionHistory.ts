@@ -1,21 +1,18 @@
 import mongoose from "mongoose";
 
-const WalletSchema = new mongoose.Schema({
-  userId: {
+const TransactionHistorySchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true,
   },
-  balance: {
+  previousBalance: {
     type: Number,
-    default: 0
   },
-  sNo: {
-    type: String,
-    default: ""
+  newBalance: {
+    type: Number,
   },
-  cardId: {
+  message: {
     type: String,
-    default: ""
   },
   createdAt: {
     type: Date,
@@ -24,12 +21,12 @@ const WalletSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now,
-  },
+  }
 });
 
-WalletSchema.pre("update", async function (next) {
+TransactionHistorySchema.pre("update", async function (next) {
   this.set({ updatedAt: new Date() });
   next();
-});
+})
 
-export const WalletModel = mongoose.model("Wallet", WalletSchema);
+export const TransactionHistoryModel = mongoose.model("TransactionHistory", TransactionHistorySchema)
