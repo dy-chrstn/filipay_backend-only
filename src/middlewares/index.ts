@@ -7,9 +7,12 @@ export const isAuthorized = basicAuth({
   authorizeAsync: true,
   authorizer: async (username: string, password: string, cb: any) => {
     try {
-      if(username === process.env.USERNAME && password === process.env.PASSWORD){
+      if (
+        username === process.env.USERNAME &&
+        password === process.env.PASSWORD
+      ) {
         return cb(null, true);
-      }else{
+      } else {
         return cb(null, false, { message: "Invalid credentials", status: 401 });
       }
     } catch (error) {
@@ -25,7 +28,11 @@ export const isAuthorized = basicAuth({
   },
 });
 
-export const tokenAuth = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export const tokenAuth = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
@@ -57,4 +64,36 @@ export const tokenAuth = async (req: express.Request, res: express.Response, nex
       .status(401)
       .json({ code: 1, message: "Invalid token", status: 401, token: token });
   }
+};
+
+export const checkCredentials = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction
+) => {
+  const { email, password } = req.body;
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const mobileNumberRegex = /^(09|\+639)\d{9}$/;
+  const passwordRegex = /^.{8,}$/;
+
+  if (emailRegex.test(email)) {
+    if (!passwordRegex.test(password)) {
+      return res
+        .status(401)
+        .json({ code: 1, message: "Invalid email or password", status: 401 });
+    }
+  } else if (mobileNumberRegex.test(email)) {
+    if (!passwordRegex.test(password)) {
+      return res
+        .status(401)
+        .json({ code: 1, message: "Invalid email or password", status: 401 });
+    }
+  } else {
+    return res
+      .status(401)
+      .json({ code: 1, message: "Invalid email or password", status: 401 });
+  }
+
+  next();
 };
