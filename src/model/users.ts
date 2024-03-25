@@ -11,6 +11,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  pin: {
+    type: String,
+  },
   firstName: {
     type: String,
   },
@@ -39,7 +42,7 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-UserSchema.pre("save", async function(next){
+UserSchema.pre("save", async function (next) {
   this.set({ createdAt: new Date() });
   this.set({ updatedAt: new Date() });
   next();

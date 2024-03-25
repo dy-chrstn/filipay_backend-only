@@ -7,8 +7,10 @@ export const isAuthorized = basicAuth({
   authorizeAsync: true,
   authorizer: async (username: string, password: string, cb: any) => {
     try {
+      // console.log(username, password);
+      // console.log(process.env.USERNAME, process.env.PASSWORD);
       if (
-        username === process.env.USERNAME &&
+        username === process.env.USERNAMEE &&
         password === process.env.PASSWORD
       ) {
         return cb(null, true);
@@ -22,8 +24,11 @@ export const isAuthorized = basicAuth({
   challenge: true, // Sends a 401 Unauthorized response automatically
   unauthorizedResponse: () => {
     return {
-      code: 1,
-      message: "Unauthorized",
+      messages: {
+        code: 1,
+        message: "Unauthorized",
+      },
+      response: {}
     };
   },
 });
@@ -38,7 +43,12 @@ export const tokenAuth = async (
   if (!authHeader) {
     return res
       .status(401)
-      .json({ code: 1, message: "Unauthorized access", status: 401 });
+      .json({
+        messages: {
+          code: 1, message: "Unauthorized access"
+        },
+        response: {}
+      });
   }
 
   const token = authHeader.split(" ")[1];
@@ -46,7 +56,12 @@ export const tokenAuth = async (
   if (!token) {
     return res
       .status(401)
-      .json({ code: 1, message: "Bearer token is missing", status: 401 });
+      .json({
+        messages: {
+          code: 1, message: "Bearer token is missing"
+        },
+        response: {}
+      });
   }
 
   try {
@@ -55,14 +70,23 @@ export const tokenAuth = async (
     if (!existingToken) {
       return res
         .status(401)
-        .json({ code: 1, message: "Token no similarities", status: 401 });
+        .json({
+          messages: {
+            code: 1,
+            message: "Token no similarities"
+          },
+          response: {}
+        });
     }
 
     next();
   } catch (error) {
     return res
       .status(401)
-      .json({ code: 1, message: "Invalid token", status: 401, token: token });
+      .json({
+        messages: { code: 1, message: "Invalid token" },
+        response: { token: token }
+      });
   }
 };
 
@@ -81,18 +105,27 @@ export const checkCredentials = async (
     if (!passwordRegex.test(password)) {
       return res
         .status(401)
-        .json({ code: 1, message: "Invalid email or password", status: 401 });
+        .json({
+          messages: { code: 1, message: "Invalid email or password" },
+          response: {}
+        });
     }
   } else if (mobileNumberRegex.test(email)) {
     if (!passwordRegex.test(password)) {
       return res
         .status(401)
-        .json({ code: 1, message: "Invalid email or password", status: 401 });
+        .json({
+          messages: { code: 1, message: "Invalid email or password" },
+          response: {}
+        });
     }
   } else {
     return res
       .status(401)
-      .json({ code: 1, message: "Invalid email or password", status: 401 });
+      .json({
+        messages: { code: 1, message: "Invalid email or password" },
+        response: {}
+      });
   }
 
   next();

@@ -24,9 +24,12 @@ export const loginUser = async (
 
     if (!email || !password) {
       return res.status(400).json({
-        code: 1,
-        message: "Email and password are required",
-        timestamp: timestamp,
+        messages: {
+          code: 1,
+          message: "Email and password are required",
+          timestamp: timestamp,
+        },
+        response: {}
       });
     }
 
@@ -34,41 +37,62 @@ export const loginUser = async (
 
     if (!user) {
       return res.status(400).json({
-        code: 1,
-        message: "User not found",
-        timestamp: timestamp,
+        messages: {
+          code: 1,
+          message: "User not found",
+          timestamp: timestamp,
+        },
+        response: {}
+
       });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      return res.status(200).json({
-        code: 0,
-        message: "User logged in successfully",
-        id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        middleName: user.middleName,
-        lastName: user.lastName,
-        address: user.address,
-        birthday: user.birthday,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      });
+      return res.status(200).json(
+
+        {
+          messages: {
+            code: 0,
+            message: "User logged in successfully"
+          },
+          response: {
+            id: user._id,
+            email: user.email,
+            pin: user.pin,
+            firstName: user.firstName,
+            middleName: user.middleName,
+            lastName: user.lastName,
+            address: user.address,
+            birthday: user.birthday,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+          },
+
+        });
     } else {
       return res.status(400).json({
-        code: 1,
-        message: "Invalid password",
-        timestamp: timestamp,
+        messages: {
+          code: 1,
+          message: "Invalid password",
+          timestamp: timestamp,
+        },
+        response: {}
+
       });
     }
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      code: 1,
-      message: "Internal server error",
-      timestamp: timestamp,
+      messages: {
+        code: 1,
+        message: "Internal server error",
+        timestamp: timestamp,
+      },
+      response: {}
+
+
     });
   }
 };
@@ -87,6 +111,7 @@ export const registerUser = async (
       address,
       birthday,
       mobileNumber,
+      pin,
     } = req.body;
 
     if (!email || !password) {
@@ -96,6 +121,7 @@ export const registerUser = async (
         timestamp: true,
       });
     }
+
     const hashPassword = await bcrypt.hash(password, 10);
 
     let newUser = {
@@ -107,6 +133,7 @@ export const registerUser = async (
       address: address,
       birthday: birthday,
       mobileNumber: mobileNumber,
+      pin: pin,
     };
 
     try {
@@ -154,9 +181,13 @@ export const completeRegistration = async (
 
     if (!user) {
       return res.status(400).json({
-        code: 1,
-        message: "User not found",
-        timestamp: true,
+        messages: {
+          code: 1,
+          message: "User not found",
+          timestamp: true,
+        },
+        response: {}
+
       });
     }
 
@@ -168,21 +199,31 @@ export const completeRegistration = async (
     console.log(updatedUser);
 
     return res.status(200).json({
-      code: 0,
-      message: "User updated",
-      updatedUser,
+      messages: {
+        code: 0,
+        message: "User updated"
+      },
+      response: { updatedUser }
+
     });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      code: 1,
-      message: "Internal server error",
-      timestamp: true,
+      messages: {
+        code: 1,
+        message: "Internal server error",
+        timestamp: true,
+      },
+      response: {}
+
     });
   }
 };
 
-export const updateBalance = async (req: express.Request, res: express.Response) => {
+export const updateBalance = async (
+  req: express.Request,
+  res: express.Response
+) => {
   const id = req.params.id;
   const { balance } = req.body;
   try {
@@ -191,7 +232,7 @@ export const updateBalance = async (req: express.Request, res: express.Response)
     const beforeBalance = await getWallet(id);
     const wallet = await updateWallet(id, balance);
 
-    const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`
+    const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`;
 
     const newHistory = await createTransactionHistory(
       fullName,
@@ -200,42 +241,61 @@ export const updateBalance = async (req: express.Request, res: express.Response)
       "Balance updated"
     );
 
-    if(!user){
+    if (!user) {
       return res.status(400).json({
-        code: 1,
-        message: "User not found",
-        timestamp: true,
+        messages: {
+          code: 1,
+          message: "User not found",
+          timestamp: true,
+        },
+        response: {}
+
       });
     }
 
-    if(!wallet ){
+    if (!wallet) {
       return res.status(400).json({
-        code: 1,
-        message: "Wallet not found",
-        timestamp: true,
+        messages: {
+          code: 1,
+          message: "Wallet not found",
+          timestamp: true,
+        },
+        response: {}
+
       });
     }
 
-    if(!newHistory){
+    if (!newHistory) {
       return res.status(400).json({
-        code: 1,
-        message: "Transaction history not found",
-        timestamp: true,
+        messages: {
+          code: 1,
+          message: "Transaction history not found",
+          timestamp: true,
+        },
+        response: {}
+
       });
     }
 
     return res.status(200).json({
-      code: 0,
-      message: "Wallet updated",
-      wallet,
-    });
+      messages: {
+        code: 0,
+        message: "Wallet updated",
+      },
+      response: { wallet }
 
+
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
-      code: 1,
-      message: "Internal server error",
-      timestamp: true,
+      messages: {
+        code: 1,
+        message: "Internal server error",
+        timestamp: true,
+      },
+      response: {}
+
     });
   }
 };
