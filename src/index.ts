@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import router from "./router";
 import mongoose from "mongoose";
 
-const port = 3000;
+const port = process.env.PORT || 3001;
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 const server = http.createServer(app);
 
-server.listen(port, () => {
+server.listen(port, () => { 
   console.log("Server running on http://localhost:" + port);
 });
 
