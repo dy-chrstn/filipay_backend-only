@@ -66,6 +66,7 @@ export const loginUser = async (
             lastName: user.lastName,
             address: user.address,
             birthday: user.birthday,
+            mobileNumber: user.mobileNumber,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
           },
@@ -75,7 +76,7 @@ export const loginUser = async (
       return res.status(400).json({
         messages: {
           code: 1,
-          message: "Invalid password",
+          message: "Invalid email or password",
           timestamp: timestamp,
         },
         response: {}
@@ -118,7 +119,17 @@ export const registerUser = async (
       return res.sendStatus(400).json({
         code: 1,
         message: "Email and password are required",
-        timestamp: true,
+      });
+    }
+
+    const existingUser = await getUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({
+        message: {
+          code: 1,
+          message: "Email already exists",
+        },
+        response: {}
       });
     }
 
@@ -142,25 +153,33 @@ export const registerUser = async (
       const wallet = await createWallet(user._id);
 
       return res.status(200).json({
-        code: 0,
-        message: "User created",
-        user,
-        wallet,
+        messages: {
+          code: 0,
+          message: "User created",
+        },
+        response: {
+          user,
+          wallet,
+        }
       });
     } catch (error) {
       console.log("Error creating user: ", error);
       return res.sendStatus(400).json({
-        code: 1,
-        message: "Error creating user",
-        timestamp: true,
+        messages: {
+          code: 1,
+          message: "Error creating user",
+        },
+        response: {}
       });
     }
   } catch (error) {
     console.log(error);
     return res.sendStatus(400).json({
-      code: 1,
-      message: "Internal server error",
-      timestamp: true,
+      messages: {
+        code: 1,
+        message: "Internal server error",
+      },
+      response: {}
     });
   }
 };
@@ -212,7 +231,6 @@ export const completeRegistration = async (
       messages: {
         code: 1,
         message: "Internal server error",
-        timestamp: true,
       },
       response: {}
 
@@ -246,7 +264,6 @@ export const updateBalance = async (
         messages: {
           code: 1,
           message: "User not found",
-          timestamp: true,
         },
         response: {}
 
@@ -258,7 +275,6 @@ export const updateBalance = async (
         messages: {
           code: 1,
           message: "Wallet not found",
-          timestamp: true,
         },
         response: {}
 
@@ -270,7 +286,6 @@ export const updateBalance = async (
         messages: {
           code: 1,
           message: "Transaction history not found",
-          timestamp: true,
         },
         response: {}
 
@@ -292,7 +307,6 @@ export const updateBalance = async (
       messages: {
         code: 1,
         message: "Internal server error",
-        timestamp: true,
       },
       response: {}
 
