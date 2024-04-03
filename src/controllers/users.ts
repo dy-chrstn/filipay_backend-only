@@ -64,6 +64,7 @@ export const loginUser = async (
             firstName: user.firstName,
             middleName: user.middleName,
             lastName: user.lastName,
+            type: user.type,
             address: user.address,
             birthday: user.birthday,
             mobileNumber: user.mobileNumber,
@@ -109,6 +110,7 @@ export const registerUser = async (
       firstName,
       middleName,
       lastName,
+      type,
       address,
       birthday,
       mobileNumber,
@@ -125,7 +127,7 @@ export const registerUser = async (
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({
-        message: {
+        messages: {
           code: 1,
           message: "Email already exists",
         },
@@ -141,6 +143,7 @@ export const registerUser = async (
       firstName: firstName,
       middleName: middleName,
       lastName: lastName,
+      type: type,
       address: address,
       birthday: birthday,
       mobileNumber: mobileNumber,
@@ -195,15 +198,11 @@ export const completeRegistration = async (
     const objectId = new mongoose.Types.ObjectId(id);
     const user = await getUserById(objectId);
 
-    console.log(objectId);
-    console.log(user);
-
     if (!user) {
       return res.status(400).json({
         messages: {
           code: 1,
           message: "User not found",
-          timestamp: true,
         },
         response: {}
 
@@ -212,17 +211,25 @@ export const completeRegistration = async (
 
     const updatedUser = await updateUser(user._id, req.body);
 
-    console.log(user);
-    console.log(user._id);
-    console.log(req.body);
-    console.log(updatedUser);
-
     return res.status(200).json({
       messages: {
         code: 0,
         message: "User updated"
       },
-      response: { updatedUser }
+      response: {
+        _id: updatedUser._id,
+        email: updatedUser.email,
+        pin: updatedUser.pin,
+        firstName: updatedUser.firstName,
+        middleName: updatedUser.middleName,
+        lastName: updatedUser.lastName,
+        type: updatedUser.type,
+        address: updatedUser.address,
+        birthday: updatedUser.birthday,
+        mobileNumber: updatedUser.mobileNumber,
+        createdAt: updatedUser.createdAt,
+        updatedAt: updatedUser.updatedAt,
+      }
 
     });
   } catch (error) {
@@ -237,6 +244,38 @@ export const completeRegistration = async (
     });
   }
 };
+
+export const findWallet = async (req: express.Request, res: express.Response) => {
+  try {
+    const id = req.params.id;
+
+    const wallet = await getWallet(id);
+    return res.status(200).json({
+      messages: {
+        code: 0,
+        message: "Wallet found",
+      },
+      response: {
+        _id: wallet._id,
+        userId: wallet.userId,
+        balance: wallet.balance,
+        sNo: wallet.sNo,
+        cardId: wallet.cardId,
+        createdAt: wallet.createdAt,
+        updatedAt: wallet.updatedAt,
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      messages: {
+        code: 1,
+        message: "Internal server error",
+      },
+      response: {}
+    });
+  }
+}
 
 export const updateBalance = async (
   req: express.Request,

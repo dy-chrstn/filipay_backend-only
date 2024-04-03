@@ -23,6 +23,9 @@ const UserSchema = new mongoose.Schema({
   lastName: {
     type: String,
   },
+  type: {
+    type: String,
+  },
   address: {
     type: String,
   },
@@ -45,6 +48,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.pre("save", async function (next) {
   this.set({ createdAt: new Date() });
   this.set({ updatedAt: new Date() });
+  this.set({ type: "STANDARD"})
   next();
 })
 

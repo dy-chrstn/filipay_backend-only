@@ -106,7 +106,7 @@ export const checkCredentials = async (
       return res
         .status(401)
         .json({
-          messages: { code: 1, message: "Invalid email or password" },
+          messages: { code: 1, message: "Password must be at least 8 characters" },
           response: {}
         });
     }
@@ -115,7 +115,7 @@ export const checkCredentials = async (
       return res
         .status(401)
         .json({
-          messages: { code: 1, message: "Invalid email or password" },
+          messages: { code: 1, message: "Password must be at least 8 characters" },
           response: {}
         });
     }
