@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+const getCurrentDateWithUTC08 = () => {
+  const now = new Date();
+
+  const utc08Offset = +8 * 60; 
+  now.setMinutes(now.getMinutes() + utc08Offset);
+  return now;
+};
+
 const WalletSchema = new mongoose.Schema({
   userId: {
     type: String,
@@ -19,11 +27,11 @@ const WalletSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: getCurrentDateWithUTC08,
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
+    default: getCurrentDateWithUTC08,
   },
 });
 

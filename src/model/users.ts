@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+const getCurrentDateWithUTC08 = () => {
+  const now = new Date();
+
+  const utc08Offset = +8 * 60; 
+  now.setMinutes(now.getMinutes() + utc08Offset);
+  return now;
+};
+
 const UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -37,23 +45,21 @@ const UserSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: getCurrentDateWithUTC08,
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
+    default: getCurrentDateWithUTC08,
   },
 });
 
 UserSchema.pre("save", async function (next) {
-  this.set({ createdAt: new Date() });
-  this.set({ updatedAt: new Date() });
   this.set({ type: "STANDARD"})
   next();
 })
 
 UserSchema.pre("update", async function (next) {
-  this.set({ updatedAt: new Date() });
+  this.set({ updatedAt: getCurrentDateWithUTC08 });
   next();
 });
 

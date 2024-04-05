@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+const getCurrentDateWithUTC08 = () => {
+  const now = new Date();
+
+  const utc08Offset = +8 * 60; 
+  now.setMinutes(now.getMinutes() + utc08Offset);
+  return now;
+};
+
 const TransactionHistorySchema = new mongoose.Schema({
   userId: {
     type: String,
@@ -31,17 +39,17 @@ const TransactionHistorySchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: getCurrentDateWithUTC08,
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
+    default: getCurrentDateWithUTC08, 
   }
 });
 
 TransactionHistorySchema.pre("update", async function (next) {
-  this.set({ updatedAt: new Date() });
+  this.set({ updatedAt: getCurrentDateWithUTC08() });
   next();
-})
+});
 
-export const TransactionHistoryModel = mongoose.model("TransactionHistory", TransactionHistorySchema)
+export const TransactionHistoryModel = mongoose.model("TransactionHistory", TransactionHistorySchema);
