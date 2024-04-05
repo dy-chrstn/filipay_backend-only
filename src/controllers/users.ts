@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import moment from "moment";
 import mongoose from "mongoose";
 import { createWallet, updateWallet, getWallet } from "../services/wallet";
-import { createTransactionHistory } from "../services/transactionHistory";
+import { createTransactionHistory, findTransactionHistories } from "../services/transactionHistory";
 
 import {
   createUser,
@@ -282,7 +282,7 @@ export const updateBalance = async (
   res: express.Response
 ) => {
   const id = req.params.id;
-  const { balance } = req.body;
+  const { balance, userId, referenceCode, paymentMethod, serviceFee, status } = req.body;
   try {
     const objectId = new mongoose.Types.ObjectId(id);
     const user = await getUserById(objectId);
@@ -292,6 +292,11 @@ export const updateBalance = async (
     const fullName = `${user.firstName} ${user.middleName} ${user.lastName}`;
 
     const newHistory = await createTransactionHistory(
+      userId,
+      referenceCode,
+      paymentMethod,
+      serviceFee,
+      status,
       fullName,
       beforeBalance.balance,
       balance,
@@ -337,8 +342,6 @@ export const updateBalance = async (
         message: "Wallet updated",
       },
       response: { wallet }
-
-
     });
   } catch (error) {
     console.log(error);
@@ -352,3 +355,21 @@ export const updateBalance = async (
     });
   }
 };
+
+export const getTransactionHistories = async (req: express.Request, res: express.Response) =>{
+  try{
+    const id = req.params.id;
+
+    const transactionHistories = await findTransactionHistories(id);
+    return res.status(200).json({
+      messages: {
+        code: 0,
+        message: "User transaction histories retrieved"
+      },
+      response: transactionHistories
+    })
+
+  }catch(error){
+    console.log(error)
+  }
+}

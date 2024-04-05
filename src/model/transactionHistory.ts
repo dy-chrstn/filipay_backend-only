@@ -1,6 +1,21 @@
 import mongoose from "mongoose";
 
 const TransactionHistorySchema = new mongoose.Schema({
+  userId: {
+    type: String,
+  },
+  referenceCode: {
+    type: String
+  },
+  paymentMethod: {
+    type: String
+  },
+  serviceFee: {
+    type: Number
+  },
+  status:{
+    type: String
+  },
   name: {
     type: String,
     required: true,
