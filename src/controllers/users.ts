@@ -191,7 +191,6 @@ export const completeRegistration = async (
   req: express.Request,
   res: express.Response
 ) => {
-  // const { email } = req.params;
   const id = req.params.id;
 
   try {
