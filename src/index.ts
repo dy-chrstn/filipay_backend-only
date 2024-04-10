@@ -17,7 +17,7 @@ app.get("/", (req, res) => {
 
 const server = http.createServer(app);
 
-server.listen(port, () => { 
+server.listen(port, () => {
   console.log("Server running on http://localhost:" + port);
 });
 
@@ -29,6 +29,6 @@ mongoose.Promise = Promise;
 mongoose.connect(MONGO_URL);
 mongoose.connection.on("error", (error: Error) => console.log(error));
 
-app.use("/", router());
+app.use("/filipayMobile", router());
 
 export default app
