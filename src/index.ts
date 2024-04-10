@@ -11,6 +11,10 @@ const app = express();
 
 app.use(bodyParser.json());
 
+app.get("/", (req, res) => {
+  res.json("Filipay Mobile API")
+})
+
 const server = http.createServer(app);
 
 server.listen(port, () => { 
@@ -26,3 +30,5 @@ mongoose.connect(MONGO_URL);
 mongoose.connection.on("error", (error: Error) => console.log(error));
 
 app.use("/", router());
+
+export default app
