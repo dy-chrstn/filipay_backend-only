@@ -13,7 +13,7 @@ const port = process.env.PORT || 3001;
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
 app.get("/", (req, res) => {
-    res.json("Filipay API");
+    res.json("Filipay-Mobile API");
 });
 const server = http_1.default.createServer(app);
 server.listen(port, () => {
